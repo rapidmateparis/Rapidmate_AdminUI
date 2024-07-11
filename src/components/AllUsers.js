@@ -1321,6 +1321,7 @@ function AllUsers({navigation}) {
           <TextInput
             style={styles.searchinput}
             placeholder="Search users"
+            placeholderTextColor={colors.text}
             value={searchText}
             onChangeText={setSearchText}
           />

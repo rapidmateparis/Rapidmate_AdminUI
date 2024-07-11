@@ -42,6 +42,7 @@ const ManagePaymentMethods = ({navigation}) => {
           <TextInput
             style={styles.searchinput}
             placeholder="Search by card number or user name"
+            placeholderTextColor={colors.text}
             value={searchText}
             onChangeText={setSearchText}
           />

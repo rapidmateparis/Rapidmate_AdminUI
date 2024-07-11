@@ -569,6 +569,7 @@ function JoinRequests({navigation}) {
           <TextInput
             style={styles.searchinput}
             placeholder="Search order by ID"
+            placeholderTextColor={colors.text}
             value={searchText}
             onChangeText={setSearchText}
           />

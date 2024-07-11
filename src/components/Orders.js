@@ -583,6 +583,7 @@ function Orders({navigation}) {
           />
           <TextInput
             style={styles.searchinput}
+            placeholderTextColor={colors.text}
             placeholder="Search order by ID"
             value={searchText}
             onChangeText={setSearchText}

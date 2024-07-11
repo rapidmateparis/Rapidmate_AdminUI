@@ -132,6 +132,10 @@ const EmployeeSignup = ({navigation}) => {
                   placeholder={!isFocus ? '+33' : '...'}
                   searchPlaceholder="+.."
                   value={dropdownValue}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  placeholderStyle={styles.placeholderStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={item => {
@@ -324,6 +328,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Montserrat-Bold',
     color: colors.primary,
+  },
+  selectedTextStyle: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-Medium',
+    color: colors.text,
+  },
+  placeholderStyle: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-Medium',
+    color: colors.text,
+  },
+  inputSearchStyle: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-Medium',
+    color: colors.text,
   },
 });
 

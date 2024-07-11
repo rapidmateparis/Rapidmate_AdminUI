@@ -119,7 +119,7 @@ const Home = ({navigation}) => {
         </View>
 
         <View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('JoinRequests')}>
             <LinearGradient
               colors={['rgba(239, 176, 61, 0)', 'rgba(239, 176, 61, 0.08)']}
               start={{x: 1, y: 0}}
@@ -143,7 +143,7 @@ const Home = ({navigation}) => {
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Orders')}>
             <View style={styles.profileCard}>
               <Image
                 style={{width: 19, height: 23}}
@@ -158,7 +158,7 @@ const Home = ({navigation}) => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ManageAds')}>
             <View style={styles.profileCard}>
               <Image
                 style={{width: 22, height: 19}}

@@ -83,8 +83,8 @@ const CustomDrawer = ({navigation}) => {
             onPress={() => navigation.navigate('RecentlyDeletedUsers')}>
             <View style={styles.pagesCard}>
               <Image
-                style={{width: 21, height: 21}}
-                source={require('../images/UsersIcon.png')}
+                style={{width: 20, height: 15,}}
+                source={require('../images/deletedUsers.png')}
               />
               <View style={styles.pageNameCard}>
                 <Text style={styles.pageName}>Recently deleted users</Text>

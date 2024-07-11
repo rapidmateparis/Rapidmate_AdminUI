@@ -158,7 +158,7 @@ const DrawerNavigator = () => {
         component={Orders}
         options={{
           headerShown: true,
-          headerTitle: 'Join Requests',
+          headerTitle: 'Order',
           headerTitleStyle: {
             fontFamily: 'Montserrat-SemiBold',
             fontSize: 16,
