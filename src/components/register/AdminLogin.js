@@ -6,15 +6,19 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  Alert,
 } from 'react-native';
-import Feather from 'react-native-vector-icons/Feather'
-import AntDesign  from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import {colors} from '../../colors';
+import {useLoader} from '../../utils/loaderContext';
+import {authenticateUser} from '../../data_manager';
 
 const AdminLogin = ({navigation}) => {
   const [emailPhone, setEmailPhone] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const {setLoading} = useLoader();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -28,26 +32,50 @@ const AdminLogin = ({navigation}) => {
     const isPhone = /^\d{10}$/.test(emailPhone);
 
     if (isEmail || isPhone) {
-      // Perform login action here based on email or phone number
-      navigation.navigate('MainScreen');
-      // Loader(true);
-      // let tempData = {
-      //   emailPhone: emailPhone,
-      //   password: password,
-      // };
-      // try {
-      //   let res = await postData('sendOtp', tempData);
-      //   if (res.statusCode === 200) {
-      //     console.log('success-------------');
-      //   }
-      // } catch (error) {
-      //   console.error('Error:', error);
-      // } finally {
-      //   Loader(false);
-      // }
+      setLoading(true);
+      let params = {
+        info: {
+          userName: emailPhone, // "syszoomail@gmail.com"
+          password: password, //"Syszoo12!"
+        },
+      };
+      authenticateUser(
+        params,
+        successResponse => {
+          if (successResponse[0]._success) {
+            setLoading(false);
+            if (successResponse[0]._response) {
+              if (
+                successResponse[0]._response.name == 'NotAuthorizedException'
+              ) {
+                Alert.alert(
+                  'Error Alert',
+                  'Username or password is incorrect',
+                  [{text: 'OK', onPress: () => {}}],
+                );
+              } else if (
+                successResponse[0]._response.name == 'UserNotConfirmedException'
+              ) {
+                Alert.alert('Error Alert', 'Delivery Boy Verfication Pending', [
+                  {text: 'OK', onPress: () => {}},
+                ]);
+              } else {
+                navigation.navigate('MainScreen');
+              }
+            }
+          }
+        },
+        errorResponse => {
+          setLoading(false);
+          Alert.alert('Error Alert', errorResponse[0]._errors.message, [
+            {text: 'OK', onPress: () => {}},
+          ]);
+        },
+      );
     } else {
-      // Show error message for invalid email or phone number
-      console.log('Invalid email or phone number');
+      Alert.alert('Error Alert', 'Username or password not empty', [
+        {text: 'OK', onPress: () => {}},
+      ]);
     }
   };
 
@@ -58,7 +86,7 @@ const AdminLogin = ({navigation}) => {
         <View>
           <View style={styles.logFormView}>
             <View style={styles.textInputDiv}>
-            <AntDesign name="user" size={18} color="#131314" />
+              <AntDesign name="user" size={18} color="#131314" />
               <TextInput
                 style={[styles.loginput, {fontFamily: 'Montserrat-Regular'}]}
                 placeholder="Email/Phone"

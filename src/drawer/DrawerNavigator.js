@@ -1,5 +1,12 @@
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import React from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  BackHandler,
+} from 'react-native';
+import React, {useEffect} from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import CustomDrawer from './CustomDrawer';
@@ -13,9 +20,39 @@ import Orders from '../components/Orders';
 import ManageVehicles from '../components/ManageVehicles';
 import ManagePaymentMethods from '../components/ManagePaymentMethods';
 import ManageAds from '../components/ManageAds';
+import RNExitApp from 'react-native-exit-app';
 
 const Drawer = createDrawerNavigator();
 const DrawerNavigator = () => {
+  useEffect(() => {
+    const onBackPress = () => {
+      Alert.alert(
+        'Exit App',
+        'Do you want to exit?',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {
+              // Do nothing
+            },
+            style: 'cancel',
+          },
+          {text: 'YES', onPress: () => RNExitApp.exitApp()},
+        ],
+        {cancelable: false},
+      );
+
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      onBackPress,
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   return (
     <Drawer.Navigator drawerContent={props => <CustomDrawer {...props} />}>
       <Drawer.Screen

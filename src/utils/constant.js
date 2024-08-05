@@ -14,10 +14,23 @@ export const is_Toast_Enabled = true;
 export const SCREEN_WIDTH = Dimensions.get('window').width;
 export const SCREEN_HEIGHT = Dimensions.get('window').height;
 
+export const HTTPMethod = {
+  POST: 'post',
+  GET: 'get',
+  PUT: 'put',
+  DELETE: 'delete',
+};
+
+export const BASE_URL = 'http://16.171.224.246:3000/api/';
+
 export const apiHost = {
   // baseURL: 'http://10.0.2.2:3005/api/',
   // baseURL: "http://www.api.astafa.in/api/",
   // baseURL: "https://api.astafa.in/api/",
   baseURL: 'https://betaapi.astafa.in/api/',
   apiKey: '',
+};
+
+export const API = {
+  loginAuthenticateUrl: BASE_URL + 'authuser/login',
 };
