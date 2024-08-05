@@ -14,3 +14,17 @@ export const authenticateUser = (params, successCallback, errorCallback) => {
     },
   );
 };
+
+export const getAllJoinRequest = (params, successCallback, errorCallback) => {
+  axiosCall(
+    API.getAllJoinRequestUrl,
+    HTTPMethod.POST,
+    params,
+    response => {
+      successCallback(response);
+    },
+    errorResponse => {
+      errorCallback(errorResponse);
+    },
+  );
+};

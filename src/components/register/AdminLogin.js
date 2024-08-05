@@ -15,8 +15,8 @@ import {useLoader} from '../../utils/loaderContext';
 import {authenticateUser} from '../../data_manager';
 
 const AdminLogin = ({navigation}) => {
-  const [emailPhone, setEmailPhone] = useState('');
-  const [password, setPassword] = useState('');
+  const [emailPhone, setEmailPhone] = useState('supports@rapidmate.com');
+  const [password, setPassword] = useState('Syszoo12!');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const {setLoading} = useLoader();
 
