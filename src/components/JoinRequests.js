@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -15,177 +15,135 @@ import {colors} from '../colors';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import CheckBox from '@react-native-community/checkbox';
 import ViewUserInfoModal from './commonComponents/ViewUserInfoModal';
+import {getAllJoinRequest} from '../data_manager';
+import {useLoader} from '../utils/loaderContext';
+import {FlatList} from 'react-native-gesture-handler';
 
 const Tab = createMaterialTopTabNavigator();
 
 const NewList = ({navigation}) => {
   const [isModalVisible, setModalVisible] = useState(false);
+  const {setLoading} = useLoader();
   const toggleModal = vehicleDetails => {
     setModalVisible(!isModalVisible);
   };
   const [toggleCheckBoxMain, setToggleCheckBoxMain] = useState(false);
   const [toggleCheckBoxUser, setToggleCheckBoxUser] = useState(false);
 
+  const [joinRequestDeliveryBoyList, setJoinRequestDeliveryBoyList] = useState(
+    [],
+  );
+  const [joinRequestEnterPriseList, setJoinRequestEnterPriseList] = useState(
+    [],
+  );
+
+  useEffect(() => {
+    let deliveryBoyParams = {
+      role: 'DELIVERY_BOY',
+      status: 'PENDING',
+    };
+    let enterPriseParams = {
+      role: 'ENTERPRISE',
+      status: 'PENDING',
+    };
+    getJoinRequest({
+      params: deliveryBoyParams,
+      userRole: deliveryBoyParams.role,
+    });
+    getJoinRequest({
+      params: enterPriseParams,
+      userRole: enterPriseParams.role,
+    });
+  }, []);
+
+  const getJoinRequest = ({params, userRole}) => {
+    getAllJoinRequest(
+      params,
+      successResponse => {
+        if (successResponse[0]._success) {
+          setLoading(false);
+          if (successResponse[0]._response) {
+            if (userRole == 'DELIVERY_BOY') {
+              setJoinRequestDeliveryBoyList(successResponse[0]._response);
+            } else if (userRole == 'ENTERPRISE') {
+              setJoinRequestEnterPriseList(successResponse[0]._response);
+            }
+            navigation.navigate('MainScreen');
+          }
+        }
+      },
+      errorResponse => {
+        setLoading(false);
+        Alert.alert('Error Alert', errorResponse[0]._errors.message, [
+          {text: 'OK', onPress: () => {}},
+        ]);
+      },
+    );
+  };
+
+  const getProfile = profile => {
+    let userProfile = profile.charAt(0);
+    if (userProfile == 'D') {
+      return <Text style={styles.deliveryboyType}>Delivery Boy</Text>;
+    } else if (userProfile == 'E') {
+      return <Text style={styles.enterpriseType}>Enterprise</Text>;
+    } else {
+      return <Text style={styles.pickupType}>Pickup & Dropoff</Text>;
+    }
+  };
+
+  const navigateTo = profile => {
+    let userProfile = profile.charAt(0);
+    if (userProfile == 'D') {
+      navigation.navigate('DeliveryboyNewJoinRequest');
+    } else if (userProfile == 'E') {
+      navigation.navigate('EnterpriseNewJoinRequest');
+    } else {
+      navigation.navigate('PickupNewUserJoinRequest');
+    }
+  };
+
+  const joinRequestRender = ({item}) => (
+    <View style={{paddingHorizontal: 15}}>
+      <TouchableOpacity
+        onPress={() => {
+          navigateTo(item.ext_id);
+        }}
+        style={styles.mainCard}>
+        <View style={{width: '10%'}}>
+          <Image
+            style={styles.enterpriseImga}
+            source={require('../images/EnterpriseHomeIcon.png')}
+          />
+        </View>
+        <View style={{marginLeft: 10, width: '85%'}}>
+          <View style={styles.statusName}>
+            <View style={styles.nameCard}>
+              <Text style={styles.userName}>
+                {item.first_name + ' ' + item.last_name}
+              </Text>
+              <Text style={styles.userEmail}>{item.email}</Text>
+            </View>
+            <View>{getProfile(item.ext_id)}</View>
+          </View>
+          <View style={styles.statusCard}>
+            <Text style={styles.accountStatus}>
+              Status: <Text style={styles.pendingText}>Pending</Text>
+            </Text>
+            <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
-    <ScrollView style={{width: '100%', backgroundColor: '#F9FBFD'}}>
-      <View style={{paddingHorizontal: 15}}>
-        <TouchableOpacity onPress={() => navigation.navigate('EnterpriseNewJoinRequest')} style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.enterpriseImga}
-              source={require('../images/EnterpriseHomeIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.enterpriseType}>Enterprise</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.pendingText}>Pending</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => navigation.navigate('PickupNewUserJoinRequest')} style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.pickupImga}
-              source={require('../images/PickupImage.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.pickupType}>Pickup & Dropoff</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.pendingText}>Pending</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => navigation.navigate('PickupNewUserJoinRequest')} style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.pickupImga}
-              source={require('../images/PickupImage.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.pickupType}>Pickup & Dropoff</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.pendingText}>Pending</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => navigation.navigate('DeliveryboyNewJoinRequest')}  style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.deliveryboyImga}
-              source={require('../images/DeliveryboyIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.deliveryboyType}>Delivery Boy</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.pendingText}>Pending</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.enterpriseImga}
-              source={require('../images/EnterpriseHomeIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.enterpriseType}>Enterprise</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.pendingText}>Pending</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.enterpriseImga}
-              source={require('../images/EnterpriseHomeIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.enterpriseType}>Enterprise</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.pendingText}>Pending</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    </ScrollView>
+    <View style={{width: '100%', height: '100%', backgroundColor: '#F9FBFD'}}>
+      <FlatList
+        data={[...joinRequestDeliveryBoyList, ...joinRequestEnterPriseList]}
+        renderItem={joinRequestRender}
+      />
+    </View>
   );
 };
 
