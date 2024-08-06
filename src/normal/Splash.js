@@ -4,11 +4,11 @@ import {ScrollView} from 'react-native-gesture-handler';
 import { colors } from '../colors';
 
 const Splash = ({navigation}) => {
-  useEffect(() => {
-    setTimeout(() => {
-      navigation.navigate('AdminLogin');
-    }, 2000);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     navigation.navigate('AdminLogin');
+  //   }, 2000);
+  // }, []);
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
