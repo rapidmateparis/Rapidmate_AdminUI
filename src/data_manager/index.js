@@ -28,3 +28,17 @@ export const getAllJoinRequest = (params, successCallback, errorCallback) => {
     },
   );
 };
+
+export const acceptOrRejectJoinRequest = (params, successCallback, errorCallback) => {
+  axiosCall(
+    API.acceptJoinRequestUrl,
+    HTTPMethod.PUT,
+    params,
+    response => {
+      successCallback(response);
+    },
+    errorResponse => {
+      errorCallback(errorResponse);
+    },
+  );
+};

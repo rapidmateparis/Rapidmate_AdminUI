@@ -11,7 +11,11 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
 import {colors} from '../../colors';
 
-function RejectionModal({setModalVisible, isModalVisible}) {
+function RejectionModal({
+  setModalVisible,
+  isModalVisible,
+  rejectRequestCallback,
+}) {
   const navigation = useNavigation();
   const [text, setText] = useState('');
 
@@ -54,7 +58,9 @@ function RejectionModal({setModalVisible, isModalVisible}) {
 
             <TouchableOpacity
               style={{width: '40%'}}
-              onPress={() => navigation.navigate('PickupOrderCancelled')}>
+              onPress={() => {
+                rejectRequestCallback(text);
+              }}>
               <Text style={styles.okButton}>Submit</Text>
             </TouchableOpacity>
           </View>

@@ -7,14 +7,81 @@ import {
   ScrollView,
   StyleSheet,
   Image,
+  Alert,
 } from 'react-native';
 import {colors} from '../colors';
 import RejectionModal from './commonComponents/RejectionModal';
+import {acceptOrRejectJoinRequest} from '../data_manager';
+import {useLoader} from '../utils/loaderContext';
 
-const DeliveryboyNewJoinRequest = ({navigation}) => {
+const DeliveryboyNewJoinRequest = ({route, navigation}) => {
   const [isModalVisible, setModalVisible] = useState(false);
+  const [userDetails, setUserDetails] = useState(route.params.requestItem);
+  const {setLoading} = useLoader();
+
   const toggleModal = vehicleDetails => {
     setModalVisible(!isModalVisible);
+  };
+
+  const maskText = (text, maskChar = '*') => {
+    const maskedPart = maskChar.repeat(text.length);
+    return maskedPart;
+  };
+
+  const acceptDeliveryBoyRequest = () => {
+    setLoading(true);
+    let params = {
+      role: 'DELIVERY_BOY',
+      status: 'ACCEPTED',
+      ext_id: userDetails.ext_id,
+      reason: 'Document is good',
+    };
+
+    acceptOrRejectJoinRequest(
+      params,
+      successResponse => {
+        if (successResponse[0]._success) {
+          setLoading(false);
+          console.log('rejectJoinRequest', successResponse[0]);
+          setModalVisible(false);
+          navigation.goBack();
+        }
+      },
+      errorResponse => {
+        setLoading(false);
+        Alert.alert('Error Alert', errorResponse[0]._errors.message, [
+          {text: 'OK', onPress: () => {}},
+        ]);
+      },
+    );
+  };
+
+  const rejectDeliveryBoyRequest = rejectDescription => {
+    setLoading(true);
+    console.log('rejectDescription', rejectDescription);
+    let params = {
+      role: 'DELIVERY_BOY',
+      status: 'REJECTED',
+      ext_id: userDetails.ext_id,
+      reason: rejectDescription,
+    };
+
+    acceptOrRejectJoinRequest(
+      params,
+      successResponse => {
+        if (successResponse[0]._success) {
+          setLoading(false);
+          console.log('acceptJoinRequest', successResponse[0]);
+          navigation.goBack();
+        }
+      },
+      errorResponse => {
+        setLoading(false);
+        Alert.alert('Error Alert', errorResponse[0]._errors.message, [
+          {text: 'OK', onPress: () => {}},
+        ]);
+      },
+    );
   };
 
   return (
@@ -34,22 +101,26 @@ const DeliveryboyNewJoinRequest = ({navigation}) => {
             <View style={styles.userdetailCard}>
               <View style={{width: '50%'}}>
                 <Text style={styles.userfullName}>Full name</Text>
-                <Text style={styles.userName}>John Doe</Text>
+                <Text style={styles.userName}>
+                  {userDetails.first_name + ' ' + userDetails.last_name}
+                </Text>
               </View>
               <View style={{width: '50%'}}>
                 <Text style={styles.userfullName}>Email</Text>
-                <Text style={styles.userName}>johndoe@email.com</Text>
+                <Text style={styles.userName}>{userDetails.email}</Text>
               </View>
             </View>
 
             <View style={styles.userdetailCard}>
               <View style={{width: '50%'}}>
                 <Text style={styles.userfullName}>Password</Text>
-                <Text style={styles.userName}>***********</Text>
+                <Text style={styles.userName}>
+                  {maskText(userDetails.password)}
+                </Text>
               </View>
               <View style={{width: '50%'}}>
                 <Text style={styles.userfullName}>Phone</Text>
-                <Text style={styles.userName}>+33 1 23 45 67 89</Text>
+                <Text style={styles.userName}>{userDetails.phone}</Text>
               </View>
             </View>
 
@@ -104,7 +175,7 @@ const DeliveryboyNewJoinRequest = ({navigation}) => {
       </View>
       <View style={styles.allBtnCards}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('PickupNewUserJoinRequest')}
+          onPress={acceptDeliveryBoyRequest}
           style={[styles.logButton, {backgroundColor: colors.primary}]}>
           <Text style={styles.loginBtn}>Accept</Text>
         </TouchableOpacity>
@@ -124,6 +195,7 @@ const DeliveryboyNewJoinRequest = ({navigation}) => {
       <RejectionModal
         isModalVisible={isModalVisible}
         setModalVisible={setModalVisible}
+        rejectRequestCallback={rejectDeliveryBoyRequest}
       />
     </ScrollView>
   );
