@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Image,
+  Alert,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -18,6 +19,8 @@ import ViewUserInfoModal from './commonComponents/ViewUserInfoModal';
 import {getAllJoinRequest} from '../data_manager';
 import {useLoader} from '../utils/loaderContext';
 import {FlatList} from 'react-native-gesture-handler';
+import moment from 'moment';
+import {useFocusEffect} from '@react-navigation/native';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -37,24 +40,31 @@ const NewList = ({navigation}) => {
     [],
   );
 
-  useEffect(() => {
-    let deliveryBoyParams = {
-      role: 'DELIVERY_BOY',
-      status: 'PENDING',
-    };
-    let enterPriseParams = {
-      role: 'ENTERPRISE',
-      status: 'PENDING',
-    };
-    getJoinRequest({
-      params: deliveryBoyParams,
-      userRole: deliveryBoyParams.role,
-    });
-    getJoinRequest({
-      params: enterPriseParams,
-      userRole: enterPriseParams.role,
-    });
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      let deliveryBoyParams = {
+        role: 'DELIVERY_BOY',
+        status: 'PENDING',
+      };
+      let enterPriseParams = {
+        role: 'ENTERPRISE',
+        status: 'PENDING',
+      };
+      getJoinRequest({
+        params: deliveryBoyParams,
+        userRole: deliveryBoyParams.role,
+      });
+      getJoinRequest({
+        params: enterPriseParams,
+        userRole: enterPriseParams.role,
+      });
+
+      return () => {
+        setJoinRequestDeliveryBoyList([]);
+        setJoinRequestEnterPriseList([]);
+      };
+    }, []),
+  );
 
   const getJoinRequest = ({params, userRole}) => {
     getAllJoinRequest(
@@ -92,14 +102,14 @@ const NewList = ({navigation}) => {
     }
   };
 
-  const navigateTo = profile => {
-    let userProfile = profile.charAt(0);
+  const navigateTo = item => {
+    let userProfile = item.ext_id.charAt(0);
     if (userProfile == 'D') {
-      navigation.navigate('DeliveryboyNewJoinRequest');
+      navigation.navigate('DeliveryboyNewJoinRequest', {requestItem: item});
     } else if (userProfile == 'E') {
-      navigation.navigate('EnterpriseNewJoinRequest');
+      navigation.navigate('EnterpriseNewJoinRequest', {requestItem: item});
     } else {
-      navigation.navigate('PickupNewUserJoinRequest');
+      navigation.navigate('PickupNewUserJoinRequest', {requestItem: item});
     }
   };
 
@@ -107,7 +117,7 @@ const NewList = ({navigation}) => {
     <View style={{paddingHorizontal: 15}}>
       <TouchableOpacity
         onPress={() => {
-          navigateTo(item.ext_id);
+          navigateTo(item);
         }}
         style={styles.mainCard}>
         <View style={{width: '10%'}}>
@@ -148,336 +158,229 @@ const NewList = ({navigation}) => {
 };
 
 const AcceptedList = ({navigation}) => {
+  const {setLoading} = useLoader();
   const [toggleCheckBoxMain, setToggleCheckBoxMain] = useState(false);
   const [toggleCheckBoxUser, setToggleCheckBoxUser] = useState(false);
 
-  return (
-    <ScrollView style={{width: '100%', backgroundColor: '#F9FBFD'}}>
-      <View style={{paddingHorizontal: 15}}>
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.enterpriseImga}
-              source={require('../images/EnterpriseHomeIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.enterpriseType}>Enterprise</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.acceptedText}>Accepted</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
+  const [acceptDeliveryBoyList, setAcceptDeliveryBoyList] = useState([]);
+  const [acceptEnterPriseList, setAcceptEnterPriseList] = useState([]);
 
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.pickupImga}
-              source={require('../images/PickupImage.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.pickupType}>Pickup & Dropoff</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.acceptedText}>Accepted</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
+  useFocusEffect(
+    useCallback(() => {
+      let deliveryBoyParams = {
+        role: 'DELIVERY_BOY',
+        status: 'ACCEPTED',
+      };
+      let enterPriseParams = {
+        role: 'ENTERPRISE',
+        status: 'ACCEPTED',
+      };
+      getJoinRequest({
+        params: deliveryBoyParams,
+        userRole: deliveryBoyParams.role,
+      });
+      getJoinRequest({
+        params: enterPriseParams,
+        userRole: enterPriseParams.role,
+      });
 
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.pickupImga}
-              source={require('../images/PickupImage.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.pickupType}>Pickup & Dropoff</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.acceptedText}>Accepted</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
+      return () => {
+        setAcceptDeliveryBoyList([]);
+        setAcceptEnterPriseList([]);
+      };
+    }, []),
+  );
 
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.deliveryboyImga}
-              source={require('../images/DeliveryboyIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.deliveryboyType}>Delivery Boy</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.acceptedText}>Accepted</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
+  const getJoinRequest = ({params, userRole}) => {
+    getAllJoinRequest(
+      params,
+      successResponse => {
+        if (successResponse[0]._success) {
+          setLoading(false);
+          if (successResponse[0]._response) {
+            if (userRole == 'DELIVERY_BOY') {
+              setAcceptDeliveryBoyList(successResponse[0]._response);
+            } else if (userRole == 'ENTERPRISE') {
+              setAcceptEnterPriseList(successResponse[0]._response);
+            }
+            navigation.navigate('MainScreen');
+          }
+        }
+      },
+      errorResponse => {
+        setLoading(false);
+      },
+    );
+  };
 
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.enterpriseImga}
-              source={require('../images/EnterpriseHomeIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.enterpriseType}>Enterprise</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.acceptedText}>Accepted</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
+  const getProfile = profile => {
+    let userProfile = profile.charAt(0);
+    if (userProfile == 'D') {
+      return <Text style={styles.deliveryboyType}>Delivery Boy</Text>;
+    } else if (userProfile == 'E') {
+      return <Text style={styles.enterpriseType}>Enterprise</Text>;
+    } else {
+      return <Text style={styles.pickupType}>Pickup & Dropoff</Text>;
+    }
+  };
 
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.enterpriseImga}
-              source={require('../images/EnterpriseHomeIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.enterpriseType}>Enterprise</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.acceptedText}>Accepted</Text>
+  const acceptRequestRender = acceptRequestItem => (
+    <View style={{paddingHorizontal: 15}}>
+      <View style={styles.mainCard}>
+        <View style={{width: '10%'}}>
+          <Image
+            style={styles.enterpriseImga}
+            source={require('../images/EnterpriseHomeIcon.png')}
+          />
+        </View>
+        <View style={{marginLeft: 10, width: '85%'}}>
+          <View style={styles.statusName}>
+            <View style={styles.nameCard}>
+              <Text style={styles.userName}>
+                {acceptRequestItem.item.first_name +
+                  ' ' +
+                  acceptRequestItem.item.last_name}
               </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
+              <Text style={styles.userEmail}>
+                {acceptRequestItem.item.email}
+              </Text>
             </View>
+            <View>
+              <Text style={styles.enterpriseType}>
+                {getProfile(acceptRequestItem.item.ext_id)}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.statusCard}>
+            <Text style={styles.accountStatus}>
+              Status: <Text style={styles.acceptedText}>Accepted</Text>
+            </Text>
+            <Text style={styles.dateTime}>
+              {moment(acceptRequestItem.item.updated_on).format('YYYY-MM-DD')} |{' '}
+              {moment(acceptRequestItem.item.updated_on).format('hh:mm a')}
+            </Text>
           </View>
         </View>
       </View>
-    </ScrollView>
+    </View>
+  );
+
+  return (
+    <View style={{width: '100%', backgroundColor: '#F9FBFD'}}>
+      <FlatList
+        data={[...acceptDeliveryBoyList, ...acceptEnterPriseList]}
+        renderItem={acceptRequestRender}
+      />
+    </View>
   );
 };
 
 const RejectedList = ({navigation}) => {
   const [toggleCheckBoxMain, setToggleCheckBoxMain] = useState(false);
   const [toggleCheckBoxUser, setToggleCheckBoxUser] = useState(false);
+  const {setLoading} = useLoader();
 
-  return (
-    <ScrollView style={{width: '100%', backgroundColor: '#F9FBFD'}}>
-      <View style={{paddingHorizontal: 15}}>
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.enterpriseImga}
-              source={require('../images/EnterpriseHomeIcon.png')}
-            />
+  const [rejectedDeliveryBoyList, setRejectedDeliveryBoyList] = useState([]);
+  const [rejectedEnterPriseList, setRejectedEnterPriseList] = useState([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      let deliveryBoyParams = {
+        role: 'DELIVERY_BOY',
+        status: 'REJECTED',
+      };
+      let enterPriseParams = {
+        role: 'ENTERPRISE',
+        status: 'REJECTED',
+      };
+      getJoinRequest({
+        params: deliveryBoyParams,
+        userRole: deliveryBoyParams.role,
+      });
+      getJoinRequest({
+        params: enterPriseParams,
+        userRole: enterPriseParams.role,
+      });
+
+      return () => {
+        setRejectedDeliveryBoyList([]);
+        setRejectedEnterPriseList([]);
+      };
+    }, []),
+  );
+
+  const getJoinRequest = ({params, userRole}) => {
+    getAllJoinRequest(
+      params,
+      successResponse => {
+        if (successResponse[0]._success) {
+          setLoading(false);
+          if (successResponse[0]._response) {
+            if (userRole == 'DELIVERY_BOY') {
+              setRejectedDeliveryBoyList(successResponse[0]._response);
+            } else if (userRole == 'ENTERPRISE') {
+              setRejectedEnterPriseList(successResponse[0]._response);
+            }
+            navigation.navigate('MainScreen');
+          }
+        }
+      },
+      errorResponse => {
+        setLoading(false);
+      },
+    );
+  };
+
+  const getProfile = profile => {
+    let userProfile = profile.charAt(0);
+    if (userProfile == 'D') {
+      return <Text style={styles.deliveryboyType}>Delivery Boy</Text>;
+    } else if (userProfile == 'E') {
+      return <Text style={styles.enterpriseType}>Enterprise</Text>;
+    } else {
+      return <Text style={styles.pickupType}>Pickup & Dropoff</Text>;
+    }
+  };
+
+  const rejectRequestRender = rejectedItem => (
+    <View style={styles.mainCard}>
+      <View style={{width: '10%'}}>
+        <Image
+          style={styles.enterpriseImga}
+          source={require('../images/EnterpriseHomeIcon.png')}
+        />
+      </View>
+      <View style={{marginLeft: 10, width: '85%'}}>
+        <View style={styles.statusName}>
+          <View style={styles.nameCard}>
+            <Text style={styles.userName}>
+              {rejectedItem.item.first_name + ' ' + rejectedItem.item.last_name}
+            </Text>
+            <Text style={styles.userEmail}>{rejectedItem.item.email}</Text>
           </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.enterpriseType}>Enterprise</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.rejectedText}>Rejected</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
+          <View>
+            <Text style={styles.enterpriseType}>
+              {getProfile(rejectedItem.item.ext_id)}
+            </Text>
           </View>
         </View>
-
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.pickupImga}
-              source={require('../images/PickupImage.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.pickupType}>Pickup & Dropoff</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.rejectedText}>Rejected</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.pickupImga}
-              source={require('../images/PickupImage.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.pickupType}>Pickup & Dropoff</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.rejectedText}>Rejected</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.deliveryboyImga}
-              source={require('../images/DeliveryboyIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.deliveryboyType}>Delivery Boy</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.rejectedText}>Rejected</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.enterpriseImga}
-              source={require('../images/EnterpriseHomeIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.enterpriseType}>Enterprise</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.rejectedText}>Rejected</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.mainCard}>
-          <View style={{width: '10%'}}>
-            <Image
-              style={styles.enterpriseImga}
-              source={require('../images/EnterpriseHomeIcon.png')}
-            />
-          </View>
-          <View style={{marginLeft: 10, width: '85%'}}>
-            <View style={styles.statusName}>
-              <View style={styles.nameCard}>
-                <Text style={styles.userName}>John Doe</Text>
-                <Text style={styles.userEmail}>johndoe@email.com</Text>
-              </View>
-              <View>
-                <Text style={styles.enterpriseType}>Enterprise</Text>
-              </View>
-            </View>
-            <View style={styles.statusCard}>
-              <Text style={styles.accountStatus}>
-                Status: <Text style={styles.rejectedText}>Rejected</Text>
-              </Text>
-              <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
-            </View>
-          </View>
+        <View style={styles.statusCard}>
+          <Text style={styles.accountStatus}>
+            Status: <Text style={styles.rejectedText}>Rejected</Text>
+          </Text>
+          <Text style={styles.dateTime}>26-03-24 | 10:30 AM</Text>
         </View>
       </View>
-    </ScrollView>
+    </View>
+  );
+
+  return (
+    <View style={{width: '100%', backgroundColor: '#F9FBFD'}}>
+      <FlatList
+        data={[...rejectedDeliveryBoyList, ...rejectedEnterPriseList]}
+        renderItem={rejectRequestRender}
+      />
+    </View>
   );
 };
 

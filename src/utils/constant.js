@@ -33,5 +33,6 @@ export const apiHost = {
 
 export const API = {
   loginAuthenticateUrl: BASE_URL + 'authuser/login',
-  getAllJoinRequestUrl: BASE_URL + 'joinrequest/getall'
+  getAllJoinRequestUrl: BASE_URL + 'joinrequest/getall',
+  acceptJoinRequestUrl: BASE_URL + 'joinrequest/action',
 };
