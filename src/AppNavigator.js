@@ -1,8 +1,7 @@
 import {View, Text, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
-import Splash from './normal/Splash';
 import AdminLogin from './components/register/AdminLogin';
 import {colors} from './colors';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -34,18 +33,25 @@ import RequestAdDetails from './components/RequestAdDetails';
 import AdDetails from './components/AdDetails';
 import {LoaderProvider} from './utils/loaderContext';
 import Loader from './common/Loader';
+import SplashScreen from 'react-native-splash-screen';
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
+  useEffect(() => {
+    if (SplashScreen) {
+      SplashScreen.hide();
+    }
+  }, []);
+
   return (
     <>
       <LoaderProvider>
         <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen
-              name="Splash"
-              component={Splash}
+              name="AdminLogin"
+              component={AdminLogin}
               options={{headerShown: false}}
             />
             <Stack.Screen
@@ -189,34 +195,7 @@ const AppNavigator = () => {
                 },
               })}
             />
-            <Stack.Screen
-              name="AdminLogin"
-              component={AdminLogin}
-              options={({navigation}) => ({
-                headerLeft: () => (
-                  <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={{paddingLeft: 10}}>
-                    <MaterialIcons
-                      name="keyboard-backspace"
-                      size={25}
-                      color={colors.text}
-                    />
-                  </TouchableOpacity>
-                ),
-                headerTitle: '',
-                headerTitleStyle: {
-                  fontFamily: 'Montserrat-SemiBold',
-                  fontSize: 16,
-                },
-                headerTintColor: colors.text,
-                headerTitleAlign: 'center',
-                headerStyle: {
-                  borderBottomWidth: 0,
-                  elevation: 0,
-                },
-              })}
-            />
+
             <Stack.Screen
               name="EmployeeSignup"
               component={EmployeeSignup}
