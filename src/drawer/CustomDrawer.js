@@ -116,6 +116,18 @@ const CustomDrawer = ({navigation}) => {
             </View>
           </TouchableOpacity>
 
+          <TouchableOpacity onPress={() => navigation.navigate('ManageDeliveryPreferance')}>
+            <View style={styles.pagesCard}>
+              <Image
+                style={{width: 20, height: 13.8}}
+                source={require('../images/fast-delivery.png')}
+              />
+              <View style={styles.pageNameCard}>
+                <Text style={styles.pageName}>Manage Delivery Preferance</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+
           <TouchableOpacity onPress={() => navigation.navigate('ManageAds')}>
             <View style={styles.pagesCard}>
               <Image

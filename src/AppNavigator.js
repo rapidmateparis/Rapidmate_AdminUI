@@ -32,6 +32,7 @@ import NewAdRequests from './components/NewAdRequests';
 import ManageAds from './components/ManageAds';
 import RequestAdDetails from './components/RequestAdDetails';
 import AdDetails from './components/AdDetails';
+import AddDeliveryPreferance from './components/AddDeliveryPreferance';
 
 const Stack = createStackNavigator();
 
@@ -449,6 +450,25 @@ const AppNavigator = () => {
           options={{
             headerShown: true,
             headerTitle: 'Add Vehicle',
+            headerTitleStyle: {
+              fontFamily: 'Montserrat-SemiBold',
+              fontSize: 16,
+              textAlign: 'center',
+            },
+            headerTitleAlign: 'center',
+            headerTintColor: colors.text,
+            headerStyle: {
+              borderBottomWidth: 0,
+              elevation: 0,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="AddDeliveryPreferance"
+          component={AddDeliveryPreferance}
+          options={{
+            headerShown: true,
+            headerTitle: 'Add Delivery Preferance',
             headerTitleStyle: {
               fontFamily: 'Montserrat-SemiBold',
               fontSize: 16,

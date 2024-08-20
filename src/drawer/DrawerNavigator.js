@@ -13,6 +13,7 @@ import Orders from '../components/Orders';
 import ManageVehicles from '../components/ManageVehicles';
 import ManagePaymentMethods from '../components/ManagePaymentMethods';
 import ManageAds from '../components/ManageAds';
+import ManageDeliveryPreferance from '../components/ManageDeliveryPreferance';
 
 const Drawer = createDrawerNavigator();
 const DrawerNavigator = () => {
@@ -66,6 +67,32 @@ const DrawerNavigator = () => {
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <TouchableOpacity
                 onPress={() => navigation.navigate('AddNewVehicle')}
+                style={styles.plusIcon}>
+                <AntDesign name="plus" size={18} color={colors.white} />
+              </TouchableOpacity>
+            </View>
+          ),
+        })}
+      />
+      <Drawer.Screen
+        name="ManageDeliveryPreferance"
+        component={ManageDeliveryPreferance}
+        options={({navigation}) => ({
+          headerShown: true,
+          headerTitle: 'Manage Delivery Preferance',
+          headerTitleStyle: {
+            fontFamily: 'Montserrat-SemiBold',
+            fontSize: 16,
+          },
+          headerTintColor: colors.text,
+          headerStyle: {
+            borderBottomWidth: 0,
+            elevation: 0,
+          },
+          headerRight: () => (
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('AddDeliveryPreferance')}
                 style={styles.plusIcon}>
                 <AntDesign name="plus" size={18} color={colors.white} />
               </TouchableOpacity>
