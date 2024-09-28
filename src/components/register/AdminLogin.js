@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Alert,
+  Image,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -83,6 +84,14 @@ const AdminLogin = ({navigation}) => {
     <ScrollView style={{width: '100%', backgroundColor: '#fff'}}>
       <View style={{paddingHorizontal: 15}}>
         <Text style={styles.logInText}>Admin Login</Text>
+
+        <View>
+          <Image
+            style={styles.adminLogo}
+            source={require('../../images/logo_admin.png')}
+          />
+        </View>
+
         <View>
           <View style={styles.logFormView}>
             <View style={styles.textInputDiv}>
@@ -156,6 +165,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginTop: 20,
     paddingTop: 30,
+  },
+  adminLogo: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    width: 105,
+    height: 112,
+    marginTop: '20%',
   },
   textInputDiv: {
     flexDirection: 'row',
